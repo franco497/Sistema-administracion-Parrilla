@@ -1,4 +1,4 @@
-# Parrilla Milver - Sistema de Administración de Salón
+# Administracion-Parrilla - Sistema de Administración de Salón
 
 Sistema web de gestión integral para parrillas y restaurantes, desarrollado con **React + Vite + Supabase**. Permite administrar mesas, reservas, mozos, pedidos y stock, con generación automática de tickets térmicos, control de estados en tiempo real y autenticación mediante **Magic Links**.
 
@@ -237,4 +237,4 @@ Proyecto desarrollado con fines educativos y de portafolio.
 ## 👨‍💻 Autor
 
 Desarrollado por **Franco De Vincentis**  
-🔗 [GitHub](https://github.com/tu-usuario) · [LinkedIn](https://linkedin.com/in/tu-perfil)
+🔗 [GitHub]GitHub: https://github.com/franco497 · [LinkedIn]https://www.linkedin.com/in/franco-de-vincentis/
