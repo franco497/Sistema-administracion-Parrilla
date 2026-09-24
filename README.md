@@ -237,4 +237,4 @@ Proyecto desarrollado con fines educativos y de portafolio.
 ## 👨‍💻 Autor
 
 Desarrollado por **Franco De Vincentis**  
-🔗 [GitHub]GitHub: https://github.com/franco497 · [LinkedIn]https://www.linkedin.com/in/franco-de-vincentis/
+🔗 [GitHub] : https://github.com/franco497 · [LinkedIn] : https://www.linkedin.com/in/franco-de-vincentis/
