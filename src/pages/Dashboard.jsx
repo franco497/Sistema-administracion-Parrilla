@@ -1,24 +1,25 @@
 // src/pages/Dashboard.jsx
 // Verificar que al entrar al dashboard, muestre la grilla si venimos de una mesa
 
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';  // ← Importar
-import { useRestaurante } from '../context/RestauranteContext';
-import MenuPrincipal from '../components/MenuPrincipal/MenuPrincipal';
-import GrillaMesas from '../components/Mesas/GrillaMesas';
-import LogoutButton from '../components/LogoutButton';
-import './Dashboard.css';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // ← Importar
+import { useRestaurante } from "../context/RestauranteContext";
+import MenuPrincipal from "../components/MenuPrincipal/MenuPrincipal";
+import GrillaMesas from "../components/Mesas/GrillaMesas";
+import LogoutButton from "../components/LogoutButton";
+import "./Dashboard.css";
+import GestionProductos from "../components/Productos/GestionProductos";
 
 const Dashboard = () => {
   const { loading } = useRestaurante();
-  const location = useLocation();  // ← Obtener la ubicación actual
-  const [vistaActual, setVistaActual] = useState('principal');
+  const location = useLocation(); // ← Obtener la ubicación actual
+  const [vistaActual, setVistaActual] = useState("principal");
 
   // ✅ Si venimos de una mesa, mostrar la grilla automáticamente
   useEffect(() => {
     // Si el state tiene 'mostrarMesas', cambiar a la vista de mesas
     if (location.state?.mostrarMesas) {
-      setVistaActual('mesas');
+      setVistaActual("mesas");
     }
   }, [location]);
 
@@ -27,7 +28,7 @@ const Dashboard = () => {
   };
 
   const handleVolverMenu = () => {
-    setVistaActual('principal');
+    setVistaActual("principal");
   };
 
   if (loading) {
@@ -42,15 +43,13 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <LogoutButton />
 
-      {vistaActual === 'principal' && (
+      {vistaActual === "principal" && (
         <MenuPrincipal onSeleccionarModulo={handleSeleccionarModulo} />
       )}
 
-      {vistaActual === 'mesas' && (
-        <GrillaMesas onVolver={handleVolverMenu} />
-      )}
+      {vistaActual === "mesas" && <GrillaMesas onVolver={handleVolverMenu} />}
 
-      {vistaActual === 'cargar' && (
+      {/*       {vistaActual === 'cargar' && (
         <div className="seccion-en-construccion">
           <button className="btn-volver" onClick={handleVolverMenu}>
             ⬅ Volver al Menú
@@ -58,9 +57,13 @@ const Dashboard = () => {
           <h2>📦 Cargar Mercadería</h2>
           <p>Próximamente: Formulario para cargar compras</p>
         </div>
+      )} */}
+
+      {vistaActual === "cargar" && (
+        <GestionProductos onVolver={handleVolverMenu} />
       )}
 
-      {vistaActual === 'stock' && (
+      {vistaActual === "stock" && (
         <div className="seccion-en-construccion">
           <button className="btn-volver" onClick={handleVolverMenu}>
             ⬅ Volver al Menú

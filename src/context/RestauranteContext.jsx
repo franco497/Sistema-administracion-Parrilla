@@ -856,6 +856,147 @@ export const RestauranteProvider = ({ children }) => {
     return reservas.find((r) => r.id_mesa === mesaId);
   };
 
+  // ==========================================
+  // CRUD DE PRODUCTOS
+  // ==========================================
+
+  // --- Crear producto ---
+  const crearProducto = async (datos) => {
+    try {
+      const { nombre, descripcion, precio, id_categoria } = datos;
+
+      if (!nombre || !precio) {
+        throw new Error("Nombre y precio son obligatorios");
+      }
+
+      const { data, error } = await supabase
+        .from("productos")
+        .insert([
+          {
+            nombre: nombre.trim(),
+            descripcion: descripcion?.trim() || null,
+            precio: parseFloat(precio),
+            id_categoria: parseInt(id_categoria),
+            activo: true,
+            disponible: true,
+          },
+        ])
+        .select();
+
+      if (error) throw error;
+
+      setProductos((prev) => [...prev, data[0]]);
+      console.log("✅ Producto creado:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error creando producto:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Actualizar producto ---
+  const actualizarProducto = async (id, datos) => {
+    try {
+      const { nombre, descripcion, precio, id_categoria } = datos;
+
+      if (!nombre || !precio) {
+        throw new Error("Nombre y precio son obligatorios");
+      }
+
+      const { data, error } = await supabase
+        .from("productos")
+        .update({
+          nombre: nombre.trim(),
+          descripcion: descripcion?.trim() || null,
+          precio: parseFloat(precio),
+          id_categoria: parseInt(id_categoria),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id_producto", id)
+        .select();
+
+      if (error) throw error;
+
+      setProductos((prev) =>
+        prev.map((p) => (p.id_producto === id ? data[0] : p)),
+      );
+      console.log("✅ Producto actualizado:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error actualizando producto:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Eliminar producto (borrado lógico) ---
+  const eliminarProducto = async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from("productos")
+        .update({
+          activo: false,
+          deleted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id_producto", id)
+        .select();
+
+      if (error) throw error;
+
+      setProductos((prev) =>
+        prev.map((p) => (p.id_producto === id ? data[0] : p)),
+      );
+      console.log("✅ Producto eliminado lógicamente:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error eliminando producto:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Restaurar producto ---
+  const restaurarProducto = async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from("productos")
+        .update({
+          activo: true,
+          deleted_at: null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id_producto", id)
+        .select();
+
+      if (error) throw error;
+
+      setProductos((prev) =>
+        prev.map((p) => (p.id_producto === id ? data[0] : p)),
+      );
+      console.log("✅ Producto restaurado:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error restaurando producto:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Recargar productos desde la BD ---
+  const recargarProductos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("productos")
+        .select("*")
+        .order("nombre");
+
+      if (error) throw error;
+      setProductos(data || []);
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Error recargando productos:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const value = {
     mesas,
     reservas,
@@ -877,6 +1018,12 @@ export const RestauranteProvider = ({ children }) => {
     mozosActivos,
     asignarMozo,
     removerMozo,
+    // CRUD Productos
+    crearProducto,
+    actualizarProducto,
+    eliminarProducto,
+    restaurarProducto,
+    recargarProductos,
   };
 
   return (
