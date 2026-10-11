@@ -36,7 +36,6 @@ const MesaView = () => {
   const reservaExistente = obtenerReservaPorMesa(parseInt(mesaId));
   const pedidoId = pedidosActivos[parseInt(mesaId)];
   const mozoActual = mesa?.mozoNombre || null;
-  console.log("🔍 mozoActual:", mozoActual); // Para depurar
 
   // Estado local para el nombre de la reserva
   const [nombreReservaLocal, setNombreReservaLocal] = useState("");
@@ -354,13 +353,16 @@ const MesaView = () => {
     }
   };
 
-  // Agrupar productos por categoría
+  // Agrupar productos por categoría (solo activos)
   const productosPorCategoria = {};
   categorias.forEach((cat) => {
     productosPorCategoria[cat.id_categoria] = {
       ...cat,
       productos: productos.filter(
-        (p) => p.id_categoria === cat.id_categoria && p.disponible,
+        (p) =>
+          p.id_categoria === cat.id_categoria &&
+          p.disponible &&
+          p.activo !== false, //  Excluir productos eliminados lógicamente
       ),
     };
   });
