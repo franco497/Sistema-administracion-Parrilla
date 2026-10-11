@@ -193,23 +193,29 @@
   color: #888;
 }
 
+/* Alineación de columnas */
 .col-nombre {
   font-weight: 600;
   color: #e0e0e0;
 }
 
-.col-precio {
+.gestion-tabla th.col-precio,
+.gestion-tabla td.col-precio {
+  text-align: right;
   color: #4caf50;
   font-weight: 700;
 }
 
-.col-estado {
+.gestion-tabla th.col-estado,
+.gestion-tabla td.col-estado {
   text-align: center;
 }
 
-.col-acciones {
-  text-align: right;
+.gestion-tabla th.col-acciones,
+.gestion-tabla td.col-acciones {
+  text-align: left;
   white-space: nowrap;
+  width: 1%;  
 }
 
 /* Badges */
