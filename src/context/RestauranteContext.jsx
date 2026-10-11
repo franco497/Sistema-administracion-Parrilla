@@ -219,9 +219,6 @@ export const RestauranteProvider = ({ children }) => {
 
       console.log("✅ Todos los datos cargados correctamente");
       console.log("📊 Estado final de mesas:", nuevasMesas);
-      console.log("🔍 Mozo encontrado:", mozo);
-      console.log("🔍 mozo.nombre:", mozo.nombre);
-      console.log("🔍 Guardando mozoNombre:", mozo.nombre);
     } catch (error) {
       console.error("❌ Error cargando datos:", error);
     } finally {

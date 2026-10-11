@@ -215,7 +215,7 @@
 .gestion-tabla td.col-acciones {
   text-align: left;
   white-space: nowrap;
-  width: 1%;  
+  width: 1%;
 }
 
 /* Badges */
@@ -324,4 +324,18 @@
     padding: 10px 8px;
     font-size: 0.85rem;
   }
+}
+
+/* Estilos para las opciones del dropdown de categorías */
+.select-filtro option {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 8px;
+}
+
+/* Hover sobre las opciones */
+.select-filtro option:hover,
+.select-filtro option:checked {
+  background-color: #ff4500;
+  color: #ffffff;
 }
