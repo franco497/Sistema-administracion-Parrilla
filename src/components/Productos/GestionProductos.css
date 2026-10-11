@@ -74,8 +74,14 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mensaje.success {
@@ -193,7 +199,6 @@
 }
 
 .col-precio {
-  text-align: right;
   color: #4caf50;
   font-weight: 700;
 }
@@ -233,34 +238,54 @@
 .btn-editar,
 .btn-eliminar,
 .btn-restaurar {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   color: white;
-  width: 34px;
-  height: 34px;
+  padding: 6px 14px;
+  height: 32px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   margin-left: 6px;
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+/* Editar: Amarillo */
+.btn-editar {
+  background: #f59e0b;
 }
 
 .btn-editar:hover:not(:disabled) {
-  background: rgba(245, 158, 11, 0.2);
-  border-color: #f59e0b;
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Borrar: Rojo */
+.btn-eliminar {
+  background: #c62828;
 }
 
 .btn-eliminar:hover:not(:disabled) {
-  background: rgba(198, 40, 40, 0.2);
-  border-color: #c62828;
+  background: #b71c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+}
+
+/* Restaurar: Verde */
+.btn-restaurar {
+  background: #2d6a4f;
 }
 
 .btn-restaurar:hover:not(:disabled) {
-  background: rgba(76, 175, 80, 0.2);
-  border-color: #4caf50;
+  background: #1b5e20;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
 }
 
 .btn-editar:disabled,
@@ -268,6 +293,8 @@
 .btn-restaurar:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Responsive */

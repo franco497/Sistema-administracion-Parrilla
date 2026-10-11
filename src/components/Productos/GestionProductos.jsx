@@ -1,8 +1,8 @@
 // src/components/Productos/GestionProductos.jsx
-import React, { useState, useMemo } from 'react';
-import { useRestaurante } from '../../context/RestauranteContext';
-import FormularioProducto from './FormularioProducto';
-import './GestionProductos.css';
+import React, { useState, useMemo } from "react";
+import { useRestaurante } from "../../context/RestauranteContext";
+import FormularioProducto from "./FormularioProducto";
+import "./GestionProductos.css";
 
 const GestionProductos = ({ onVolver }) => {
   const {
@@ -14,12 +14,12 @@ const GestionProductos = ({ onVolver }) => {
     restaurarProducto,
   } = useRestaurante();
 
-  const [busqueda, setBusqueda] = useState('');
-  const [filtroCategoria, setFiltroCategoria] = useState('');
-  const [filtroEstado, setFiltroEstado] = useState('activos'); // activos | inactivos | todos
+  const [busqueda, setBusqueda] = useState("");
+  const [filtroCategoria, setFiltroCategoria] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("activos"); // activos | inactivos | todos
   const [productoEditando, setProductoEditando] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [mensaje, setMensaje] = useState('');
+  const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Productos filtrados
@@ -27,22 +27,24 @@ const GestionProductos = ({ onVolver }) => {
     let filtrados = [...productos];
 
     // Filtro por estado
-    if (filtroEstado === 'activos') {
-      filtrados = filtrados.filter(p => p.activo !== false);
-    } else if (filtroEstado === 'inactivos') {
-      filtrados = filtrados.filter(p => p.activo === false);
+    if (filtroEstado === "activos") {
+      filtrados = filtrados.filter((p) => p.activo !== false);
+    } else if (filtroEstado === "inactivos") {
+      filtrados = filtrados.filter((p) => p.activo === false);
     }
 
     // Filtro por categoría
     if (filtroCategoria) {
-      filtrados = filtrados.filter(p => p.id_categoria === parseInt(filtroCategoria));
+      filtrados = filtrados.filter(
+        (p) => p.id_categoria === parseInt(filtroCategoria),
+      );
     }
 
     // Búsqueda por nombre
     if (busqueda.trim()) {
       const term = busqueda.toLowerCase().trim();
-      filtrados = filtrados.filter(p => 
-        p.nombre.toLowerCase().includes(term)
+      filtrados = filtrados.filter((p) =>
+        p.nombre.toLowerCase().includes(term),
       );
     }
 
@@ -50,8 +52,8 @@ const GestionProductos = ({ onVolver }) => {
   }, [productos, busqueda, filtroCategoria, filtroEstado]);
 
   const getNombreCategoria = (idCategoria) => {
-    const cat = categorias.find(c => c.id_categoria === idCategoria);
-    return cat?.nombre || 'Sin categoría';
+    const cat = categorias.find((c) => c.id_categoria === idCategoria);
+    return cat?.nombre || "Sin categoría";
   };
 
   const handleNuevoProducto = () => {
@@ -67,7 +69,7 @@ const GestionProductos = ({ onVolver }) => {
   const handleEliminarProducto = async (producto) => {
     const confirmar = window.confirm(
       `¿Eliminar el producto "${producto.nombre}"?\n\n` +
-      `Se marcará como inactivo y podrá restaurarse después.`
+        `Se marcará como inactivo y podrá restaurarse después.`,
     );
     if (!confirmar) return;
 
@@ -75,7 +77,7 @@ const GestionProductos = ({ onVolver }) => {
     const result = await eliminarProducto(producto.id_producto);
     if (result.success) {
       setMensaje(`✅ "${producto.nombre}" eliminado`);
-      setTimeout(() => setMensaje(''), 2500);
+      setTimeout(() => setMensaje(""), 2500);
     } else {
       setMensaje(`❌ Error: ${result.error}`);
     }
@@ -87,7 +89,7 @@ const GestionProductos = ({ onVolver }) => {
     const result = await restaurarProducto(producto.id_producto);
     if (result.success) {
       setMensaje(`✅ "${producto.nombre}" restaurado`);
-      setTimeout(() => setMensaje(''), 2500);
+      setTimeout(() => setMensaje(""), 2500);
     } else {
       setMensaje(`❌ Error: ${result.error}`);
     }
@@ -97,7 +99,7 @@ const GestionProductos = ({ onVolver }) => {
   const handleGuardar = async (datos) => {
     setLoading(true);
     let result;
-    
+
     if (productoEditando) {
       result = await actualizarProducto(productoEditando.id_producto, datos);
     } else {
@@ -105,8 +107,10 @@ const GestionProductos = ({ onVolver }) => {
     }
 
     if (result.success) {
-      setMensaje(productoEditando ? '✅ Producto actualizado' : '✅ Producto creado');
-      setTimeout(() => setMensaje(''), 2500);
+      setMensaje(
+        productoEditando ? "✅ Producto actualizado" : "✅ Producto creado",
+      );
+      setTimeout(() => setMensaje(""), 2500);
       setMostrarFormulario(false);
       setProductoEditando(null);
     } else {
@@ -128,8 +132,8 @@ const GestionProductos = ({ onVolver }) => {
           ⬅ Volver al Menú
         </button>
         <h2>📦 Gestión de Productos</h2>
-        <button 
-          className="btn-nuevo" 
+        <button
+          className="btn-nuevo"
           onClick={handleNuevoProducto}
           disabled={loading}
         >
@@ -139,7 +143,9 @@ const GestionProductos = ({ onVolver }) => {
 
       {/* Mensaje */}
       {mensaje && (
-        <div className={`mensaje ${mensaje.includes('❌') ? 'error' : 'success'}`}>
+        <div
+          className={`mensaje ${mensaje.includes("❌") ? "error" : "success"}`}
+        >
           {mensaje}
         </div>
       )}
@@ -160,7 +166,7 @@ const GestionProductos = ({ onVolver }) => {
           className="select-filtro"
         >
           <option value="">Todas las categorías</option>
-          {categorias.map(cat => (
+          {categorias.map((cat) => (
             <option key={cat.id_categoria} value={cat.id_categoria}>
               {cat.nombre}
             </option>
@@ -187,9 +193,9 @@ const GestionProductos = ({ onVolver }) => {
       <div className="gestion-tabla-wrapper">
         {productosFiltrados.length === 0 ? (
           <p className="sin-productos">
-            {busqueda || filtroCategoria 
-              ? 'No se encontraron productos con esos filtros' 
-              : 'No hay productos para mostrar'}
+            {busqueda || filtroCategoria
+              ? "No se encontraron productos con esos filtros"
+              : "No hay productos para mostrar"}
           </p>
         ) : (
           <table className="gestion-tabla">
@@ -203,15 +209,15 @@ const GestionProductos = ({ onVolver }) => {
               </tr>
             </thead>
             <tbody>
-              {productosFiltrados.map(producto => (
-                <tr 
+              {productosFiltrados.map((producto) => (
+                <tr
                   key={producto.id_producto}
-                  className={producto.activo === false ? 'fila-inactiva' : ''}
+                  className={producto.activo === false ? "fila-inactiva" : ""}
                 >
                   <td className="col-nombre">{producto.nombre}</td>
                   <td>{getNombreCategoria(producto.id_categoria)}</td>
                   <td className="col-precio">
-                    ${parseFloat(producto.precio).toLocaleString('es-AR')}
+                    ${parseFloat(producto.precio).toLocaleString("es-AR")}
                   </td>
                   <td className="col-estado">
                     {producto.activo === false ? (
@@ -227,7 +233,7 @@ const GestionProductos = ({ onVolver }) => {
                       disabled={loading || producto.activo === false}
                       title="Editar"
                     >
-                      ✏️
+                      Editar
                     </button>
                     {producto.activo === false ? (
                       <button
@@ -236,7 +242,7 @@ const GestionProductos = ({ onVolver }) => {
                         disabled={loading}
                         title="Restaurar"
                       >
-                        ♻️
+                        Restaurar
                       </button>
                     ) : (
                       <button
@@ -245,7 +251,7 @@ const GestionProductos = ({ onVolver }) => {
                         disabled={loading}
                         title="Eliminar"
                       >
-                        🗑️
+                        Borrar
                       </button>
                     )}
                   </td>
