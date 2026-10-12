@@ -217,3 +217,9 @@ ORDER BY table_name;
 -- PRODUCTOS
 ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 
+-- ============================================
+-- BORRADO LÓGICO DE PRODUCTOS 09/10/2026
+-- ============================================
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS activo BOOLEAN DEFAULT TRUE;
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE;
+CREATE INDEX IF NOT EXISTS idx_productos_activo ON productos(activo);

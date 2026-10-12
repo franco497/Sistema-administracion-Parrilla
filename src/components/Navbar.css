@@ -1,0 +1,129 @@
+/* src/components/Navbar.css */
+
+/* ============================================
+   NAVBAR - DASHBOARD
+   ============================================ */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--primary-gradient);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 1rem;
+}
+
+/* ----- BRAND (logo + título) ----- */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+
+.navbar-brand-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 4px rgba(255, 69, 0, 0.5));
+}
+
+.navbar-brand-text {
+  color: var(--white);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ----- BOTÓN CERRAR SESIÓN ----- */
+.navbar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(231, 111, 81, 0.15);
+  color: var(--white);
+  border: 1px solid rgba(231, 111, 81, 0.4);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.navbar-logout-btn:hover {
+  background: rgba(231, 111, 81, 0.35);
+  border-color: var(--danger-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(231, 111, 81, 0.3);
+}
+
+.navbar-logout-btn:active {
+  transform: scale(0.97);
+}
+
+.navbar-logout-icon {
+  font-size: 1.05rem;
+}
+
+
+/* ----- RESPONSIVE ----- */
+@media (max-width: 600px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  .navbar-brand-icon {
+    font-size: 1.3rem;
+  }
+
+  .navbar-logout-btn {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .navbar-brand-text {
+    display: none; /* Solo el ícono 🍖 en pantallas muy chicas */
+  }
+
+  .navbar-logout-text {
+    display: none; /* Solo el ícono 🚪 */
+  }
+
+  .navbar-logout-btn {
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .navbar-logout-icon {
+    font-size: 1.15rem;
+  }
+}
+
+/* ----- ACCESIBILIDAD ----- */
+.navbar-logout-btn:focus-visible {
+  outline: 2px solid var(--warning-color);
+  outline-offset: 2px;
+}
