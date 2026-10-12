@@ -860,7 +860,7 @@ export const RestauranteProvider = ({ children }) => {
   // --- Crear producto ---
   const crearProducto = async (datos) => {
     try {
-      const { nombre, descripcion, precio, id_categoria } = datos;
+      const { nombre, precio, id_categoria } = datos;
 
       if (!nombre || !precio) {
         throw new Error("Nombre y precio son obligatorios");
@@ -871,7 +871,6 @@ export const RestauranteProvider = ({ children }) => {
         .insert([
           {
             nombre: nombre.trim(),
-            descripcion: descripcion?.trim() || null,
             precio: parseFloat(precio),
             id_categoria: parseInt(id_categoria),
             activo: true,
@@ -894,7 +893,7 @@ export const RestauranteProvider = ({ children }) => {
   // --- Actualizar producto ---
   const actualizarProducto = async (id, datos) => {
     try {
-      const { nombre, descripcion, precio, id_categoria } = datos;
+      const { nombre, precio, id_categoria } = datos;
 
       if (!nombre || !precio) {
         throw new Error("Nombre y precio son obligatorios");
@@ -904,7 +903,6 @@ export const RestauranteProvider = ({ children }) => {
         .from("productos")
         .update({
           nombre: nombre.trim(),
-          descripcion: descripcion?.trim() || null,
           precio: parseFloat(precio),
           id_categoria: parseInt(id_categoria),
           updated_at: new Date().toISOString(),

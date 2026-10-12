@@ -14,15 +14,6 @@ const GestionProductos = ({ onVolver }) => {
     restaurarProducto,
   } = useRestaurante();
 
-  console.log("🔍 Categorías del Context:", categorias);
-  console.log(
-    "🔍 Tipo:",
-    typeof categorias,
-    "¿Es array?",
-    Array.isArray(categorias),
-  );
-  console.log("🔍 Longitud:", categorias?.length);
-
   const [busqueda, setBusqueda] = useState("");
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("activos"); // activos | inactivos | todos
@@ -176,11 +167,6 @@ const GestionProductos = ({ onVolver }) => {
         >
           <option value="">Todas las categorías</option>
           {categorias.map((cat) => {
-            console.log(
-              "🔍 Renderizando categoría:",
-              cat.id_categoria,
-              cat.nombre,
-            );
             return (
               <option key={cat.id_categoria} value={cat.id_categoria}>
                 {cat.nombre}
