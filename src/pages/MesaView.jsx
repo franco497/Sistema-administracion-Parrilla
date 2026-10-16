@@ -549,7 +549,7 @@ const MesaView = () => {
           <div className="mozo-section">
             <SelectorMozo
               mesaId={parseInt(mesaId)}
-              mozos={mozos} // ← Debe ser un array
+              mozos={mozos.filter((m) => m.activo !== false)} // ← Solo activos
               mozoActual={mozoActual} // ← Debe ser string o null
               onAsignar={asignarMozo} // ← Función
               onRemover={removerMozo} // ← Función
