@@ -14,13 +14,19 @@ const MenuPrincipal = ({ onSeleccionarModulo }) => {
       id: 'cargar',
       icono: '📦',
       titulo: 'Cargar Mercadería',
-      descripcion: 'Ingresá las compras de mercadería para sumar al stock.',
+      descripcion: 'Gestioná el menú y los productos del restaurante.',
     },
     {
       id: 'stock',
       icono: '📊',
       titulo: 'Ver Stock',
       descripcion: 'Consultá el inventario actual y alertas de bajo stock.',
+    },
+    {
+      id: 'mozos',
+      icono: '👨‍🍳',
+      titulo: 'Gestionar Mozos',
+      descripcion: 'Administrá el personal del salón.',
     },
   ];
 

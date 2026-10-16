@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useRestaurante } from "../context/RestauranteContext";
 import MenuPrincipal from "../components/MenuPrincipal/MenuPrincipal";
 import GrillaMesas from "../components/Mesas/GrillaMesas";
-import Navbar from "../components/Navbar";           // ← CAMBIAR
+import Navbar from "../components/Navbar"; // ← CAMBIAR
 import "./Dashboard.css";
 import GestionProductos from "../components/Productos/GestionProductos";
 
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar />                                       {/* ← CAMBIAR */}
+      <Navbar /> {/* ← CAMBIAR */}
       <div className="dashboard-container">
         {vistaActual === "principal" && (
           <MenuPrincipal onSeleccionarModulo={handleSeleccionarModulo} />
@@ -56,6 +56,15 @@ const Dashboard = () => {
             </button>
             <h2>📊 Ver Stock</h2>
             <p>Próximamente: Tabla de inventario con alertas</p>
+          </div>
+        )}
+        {vistaActual === "mozos" && (
+          <div className="seccion-en-construccion">
+            <button className="btn-volver" onClick={handleVolverMenu}>
+              ⬅ Volver al Menú
+            </button>
+            <h2>👨‍🍳 Gestionar Mozos</h2>
+            <p>Próximamente: CRUD de mozos</p>
           </div>
         )}
       </div>

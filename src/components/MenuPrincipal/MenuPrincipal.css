@@ -7,33 +7,39 @@
 
 .menu-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .menu-header h1 {
   color: #ff4500;
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+  font-size: 2.2rem;
+  margin-bottom: 8px;
 }
 
 .menu-header p {
   color: #a0a0a0;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
+/* Grid con tarjetas más chicas */
 .contenedor-modulos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
 }
 
+/* Tarjetas más compactas */
 .tarjeta-modulo {
   background-color: #262626;
   border: 1px solid #333;
   border-radius: 12px;
-  padding: 30px;
+  padding: 20px 16px;
   text-align: center;
   transition: transform 0.3s ease, border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 240px;
 }
 
 .tarjeta-modulo:hover {
@@ -42,34 +48,73 @@
 }
 
 .tarjeta-modulo .icono {
-  font-size: 3.5rem;
-  margin-bottom: 15px;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
 }
 
 .tarjeta-modulo h2 {
   color: #fff;
-  margin-bottom: 10px;
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
 }
 
 .tarjeta-modulo p {
   color: #b0b0b0;
-  font-size: 0.95rem;
-  margin-bottom: 20px;
-  min-height: 60px;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+  min-height: 50px;
+  line-height: 1.4;
 }
 
 .tarjeta-modulo button {
   background-color: #ff4500;
   color: white;
   border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
+  padding: 10px 18px;
+  font-size: 0.9rem;
   font-weight: bold;
   border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s;
+  font-family: inherit;
+  width: 100%;
 }
 
 .tarjeta-modulo button:hover {
   background-color: #e03e00;
+}
+
+/* Responsive: pantallas chicas */
+@media (max-width: 600px) {
+  .menu-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .contenedor-modulos {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .tarjeta-modulo {
+    padding: 15px 12px;
+    min-height: 200px;
+  }
+
+  .tarjeta-modulo .icono {
+    font-size: 2rem;
+  }
+
+  .tarjeta-modulo h2 {
+    font-size: 1rem;
+  }
+
+  .tarjeta-modulo p {
+    font-size: 0.78rem;
+    min-height: 40px;
+  }
+
+  .tarjeta-modulo button {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
 }
