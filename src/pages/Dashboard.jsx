@@ -7,6 +7,7 @@ import GrillaMesas from "../components/Mesas/GrillaMesas";
 import Navbar from "../components/Navbar"; // ← CAMBIAR
 import "./Dashboard.css";
 import GestionProductos from "../components/Productos/GestionProductos";
+import GestionMozos from "../components/Mozos/GestionMozos";
 
 const Dashboard = () => {
   const { loading } = useRestaurante();
@@ -59,13 +60,7 @@ const Dashboard = () => {
           </div>
         )}
         {vistaActual === "mozos" && (
-          <div className="seccion-en-construccion">
-            <button className="btn-volver" onClick={handleVolverMenu}>
-              ⬅ Volver al Menú
-            </button>
-            <h2>👨‍🍳 Gestionar Mozos</h2>
-            <p>Próximamente: CRUD de mozos</p>
-          </div>
+          <GestionMozos onVolver={handleVolverMenu} />
         )}
       </div>
     </>

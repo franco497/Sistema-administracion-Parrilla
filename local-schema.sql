@@ -223,3 +223,9 @@ ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS activo BOOLEAN DEFAULT TRUE;
 ALTER TABLE productos ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE;
 CREATE INDEX IF NOT EXISTS idx_productos_activo ON productos(activo);
+
+-- ============================================
+-- BORRADO LÓGICO DE MOZOS
+-- ============================================
+ALTER TABLE mozos ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE;
+CREATE INDEX IF NOT EXISTS idx_mozos_activo ON mozos(activo);

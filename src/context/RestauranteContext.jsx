@@ -156,9 +156,8 @@ export const RestauranteProvider = ({ children }) => {
 
       const { data: mozosData, error: mozosError } = await supabase
         .from("mozos")
-        .select("id_mozo, nombre, activo")
-        .eq("activo", true)
-        .order("nombre");
+        .select("id_mozo, nombre, activo, deleted_at")
+        .order("nombre"); // ← Trae todos, sin filtro
 
       if (mozosError) throw mozosError;
       setMozos(mozosData || []);
@@ -992,6 +991,131 @@ export const RestauranteProvider = ({ children }) => {
     }
   };
 
+  // ==========================================
+  // CRUD DE MOZOS
+  // ==========================================
+
+  // --- Crear mozo ---
+  const crearMozo = async (datos) => {
+    try {
+      const { nombre } = datos;
+
+      if (!nombre || !nombre.trim()) {
+        throw new Error("El nombre es obligatorio");
+      }
+
+      const { data, error } = await supabase
+        .from("mozos")
+        .insert([
+          {
+            nombre: nombre.trim(),
+            activo: true,
+          },
+        ])
+        .select();
+
+      if (error) throw error;
+
+      setMozos((prev) => [...prev, data[0]]);
+      console.log("✅ Mozo creado:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error creando mozo:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Actualizar mozo ---
+  const actualizarMozo = async (id, datos) => {
+    try {
+      const { nombre } = datos;
+
+      if (!nombre || !nombre.trim()) {
+        throw new Error("El nombre es obligatorio");
+      }
+
+      const { data, error } = await supabase
+        .from("mozos")
+        .update({
+          nombre: nombre.trim(),
+        })
+        .eq("id_mozo", id)
+        .select();
+
+      if (error) throw error;
+
+      setMozos((prev) => prev.map((m) => (m.id_mozo === id ? data[0] : m)));
+      console.log("✅ Mozo actualizado:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error actualizando mozo:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Eliminar mozo (borrado lógico) ---
+  const eliminarMozo = async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from("mozos")
+        .update({
+          activo: false,
+          deleted_at: new Date().toISOString(),
+        })
+        .eq("id_mozo", id)
+        .select();
+
+      if (error) throw error;
+
+      setMozos((prev) => prev.map((m) => (m.id_mozo === id ? data[0] : m)));
+      console.log("✅ Mozo eliminado lógicamente:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error eliminando mozo:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Restaurar mozo ---
+  const restaurarMozo = async (id) => {
+    try {
+      const { data, error } = await supabase
+        .from("mozos")
+        .update({
+          activo: true,
+          deleted_at: null,
+        })
+        .eq("id_mozo", id)
+        .select();
+
+      if (error) throw error;
+
+      setMozos((prev) => prev.map((m) => (m.id_mozo === id ? data[0] : m)));
+      console.log("✅ Mozo restaurado:", data[0]);
+      return { success: true, data: data[0] };
+    } catch (error) {
+      console.error("❌ Error restaurando mozo:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Recargar mozos desde la BD ---
+  const recargarMozos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("mozos")
+        .select("*")
+        .order("nombre");
+
+      if (error) throw error;
+      setMozos(data || []);
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Error recargando mozos:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const value = {
     mesas,
     reservas,
@@ -1019,6 +1143,12 @@ export const RestauranteProvider = ({ children }) => {
     eliminarProducto,
     restaurarProducto,
     recargarProductos,
+    // CRUD Mozos
+    crearMozo,
+    actualizarMozo,
+    eliminarMozo,
+    restaurarMozo,
+    recargarMozos,
   };
 
   return (
