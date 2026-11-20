@@ -316,7 +316,7 @@ export const generarTicketPDF = (
 
   doc.text("Cant", margin, yPos);
   doc.text("Producto", margin + colCant, yPos);
-  doc.text("Total", pageWidth - margin - colTotal, yPos, { align: "right" });
+  doc.text("Total", pageWidth - margin, yPos, { align: "right" });
 
   yPos += 3;
   doc.setDrawColor(200);
@@ -353,7 +353,7 @@ export const generarTicketPDF = (
     }
 
     doc.text(textoMostrar, margin, yPos);
-    doc.text(subtotal, pageWidth - margin - colTotal, yPos, { align: "right" });
+    doc.text(subtotal, pageWidth - margin, yPos, { align: "right" });
 
     yPos += 4;
 
