@@ -378,7 +378,7 @@ export const RestauranteProvider = ({ children }) => {
       // Actualizar total del pedido
       await actualizarTotalPedido(pedidoId);
 
-      return { success: true };
+      return { success: true, pedidoId };
     } catch (error) {
       console.error("❌ Error agregando item:", error);
       return { success: false, error: error.message };
@@ -496,9 +496,9 @@ export const RestauranteProvider = ({ children }) => {
   };
 
   // --- FUNCIÓN: Obtener items del pedido ---
-  const obtenerItemsPedido = async (mesaId) => {
+  const obtenerItemsPedido = async (mesaId, pedidoIdOverride = null) => {
     try {
-      const pedidoId = pedidosActivos[mesaId];
+      const pedidoId = pedidoIdOverride || pedidosActivos[mesaId];
       console.log("🔍 Buscando items para pedido:", pedidoId, "Mesa:", mesaId);
 
       if (!pedidoId) {

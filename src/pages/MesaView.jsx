@@ -138,11 +138,29 @@ const MesaView = () => {
         productoId,
         cantidad,
       );
+
       if (result.success) {
         setMensaje(`✅ ${cantidad}x agregado`);
-        await cargarItemsPedido();
+
+        // 👇 CLAVE: usar el pedidoId que devuelve el contexto
+        //    (siempre es el correcto, aunque sea el primer item)
+        const itemsResult = await obtenerItemsPedido(
+          parseInt(mesaId),
+          result.pedidoId, // ← id fresco, no el del render
+        );
+
+        if (itemsResult.success) {
+          const items = itemsResult.data || [];
+          setItemsPedido(items);
+          setTotal(
+            items.reduce((s, i) => s + (parseFloat(i.subtotal) || 0), 0),
+          );
+        }
+
         setCantidades((prev) => ({ ...prev, [productoId]: 0 }));
         setTimeout(() => setMensaje(""), 2000);
+      } else {
+        setMensaje(`❌ Error: ${result.error}`);
       }
     } catch (error) {
       console.error("Error agregando item:", error);
