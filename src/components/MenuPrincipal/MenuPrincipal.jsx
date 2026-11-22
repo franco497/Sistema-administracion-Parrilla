@@ -1,32 +1,34 @@
 // src/components/MenuPrincipal/MenuPrincipal.jsx
-import React from 'react';
-import './MenuPrincipal.css';
+import React from "react";
+import "./MenuPrincipal.css";
 
 const MenuPrincipal = ({ onSeleccionarModulo }) => {
   const modulos = [
     {
-      id: 'mesas',
-      icono: '🪑',
-      titulo: 'Elegir Mesas',
-      descripcion: 'Controlá el estado del salón, abrí mesas y cargá los pedidos de los comensales.',
+      id: "mesas",
+      icono: "🪑",
+      titulo: "Elegir Mesas",
+      descripcion:
+        "Controlá el estado del salón, abrí mesas y cargá los pedidos de los comensales.",
     },
     {
-      id: 'cargar',
-      icono: '📦',
-      titulo: 'Cargar Mercadería',
-      descripcion: 'Gestioná el menú y los productos del restaurante.',
+      id: "cargar",
+      icono: "📦",
+      titulo: "Cargar Mercadería",
+      descripcion: "Gestioná el menú y los productos del restaurante.",
     },
     {
-      id: 'stock',
-      icono: '📊',
-      titulo: 'Ver Stock',
-      descripcion: 'Consultá el inventario actual y alertas de bajo stock.',
+      id: "cierre-caja",
+      icono: "💰",
+      titulo: "Cierre de Caja",
+      descripcion:
+        "Consultá las ventas del día, totalizá y exportá el cierre en PDF.",
     },
     {
-      id: 'mozos',
-      icono: '👨‍🍳',
-      titulo: 'Gestionar Mozos',
-      descripcion: 'Administrá el personal del salón.',
+      id: "mozos",
+      icono: "👨‍🍳",
+      titulo: "Gestionar Mozos",
+      descripcion: "Administrá el personal del salón.",
     },
   ];
 
@@ -38,7 +40,7 @@ const MenuPrincipal = ({ onSeleccionarModulo }) => {
       </header>
 
       <div className="contenedor-modulos">
-        {modulos.map(modulo => (
+        {modulos.map((modulo) => (
           <div key={modulo.id} className="tarjeta-modulo">
             <div className="icono">{modulo.icono}</div>
             <h2>{modulo.titulo}</h2>

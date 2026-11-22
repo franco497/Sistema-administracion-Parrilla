@@ -1116,6 +1116,178 @@ export const RestauranteProvider = ({ children }) => {
     }
   };
 
+  // ==========================================
+  // CIERRE DE CAJA
+  // ==========================================
+
+  // --- Obtener ventas del día (solo lectura) ---
+  const obtenerVentasDelDia = async (fecha) => {
+    try {
+      const desde = new Date(`${fecha}T00:00:00-03:00`).toISOString();
+      const hasta = new Date(`${fecha}T23:59:59.999-03:00`).toISOString();
+
+      console.log("🔍 Buscando ventas del día:", { fecha, desde, hasta });
+
+      const { data, error } = await supabase
+        .from("pedidos")
+        .select(
+          `
+          id_pedido,
+          id_mesa,
+          fecha_hora,
+          total,
+          detalle_pedido (
+            cantidad,
+            subtotal,
+            precio_unitario,
+            productos ( id_producto, nombre, id_categoria, categorias ( nombre ) )
+          )
+        `,
+        )
+        .eq("estado", "pagado")
+        .gte("fecha_hora", desde)
+        .lte("fecha_hora", hasta)
+        .order("fecha_hora", { ascending: true });
+
+      if (error) throw error;
+
+      const pedidos = data || [];
+      const totalDia = pedidos.reduce(
+        (s, p) => s + (parseFloat(p.total) || 0),
+        0,
+      );
+      const cantidadPedidos = pedidos.length;
+      const ticketPromedio =
+        cantidadPedidos > 0 ? totalDia / cantidadPedidos : 0;
+
+      // Top productos
+      const productosMap = {};
+      pedidos.forEach((pedido) => {
+        (pedido.detalle_pedido || []).forEach((item) => {
+          const prod = item.productos;
+          if (!prod) return;
+          const key = prod.id_producto;
+          if (!productosMap[key]) {
+            productosMap[key] = {
+              id_producto: key,
+              nombre: prod.nombre,
+              cantidad: 0,
+              total: 0,
+            };
+          }
+          productosMap[key].cantidad += item.cantidad;
+          productosMap[key].total += parseFloat(item.subtotal) || 0;
+        });
+      });
+      const topProductos = Object.values(productosMap)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 10);
+
+      // Desglose por categoría
+      const categoriasMap = {};
+      pedidos.forEach((pedido) => {
+        (pedido.detalle_pedido || []).forEach((item) => {
+          const cat = item.productos?.categorias?.nombre || "Sin categoría";
+          if (!categoriasMap[cat]) {
+            categoriasMap[cat] = { nombre: cat, cantidad: 0, total: 0 };
+          }
+          categoriasMap[cat].cantidad += item.cantidad;
+          categoriasMap[cat].total += parseFloat(item.subtotal) || 0;
+        });
+      });
+      const desgloseCategorias = Object.values(categoriasMap).sort(
+        (a, b) => b.total - a.total,
+      );
+
+      return {
+        success: true,
+        data: {
+          fecha,
+          pedidos,
+          totalDia,
+          cantidadPedidos,
+          ticketPromedio,
+          topProductos,
+          desgloseCategorias,
+        },
+      };
+    } catch (error) {
+      console.error("❌ Error obteniendo ventas del día:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Obtener cierre por fecha (null si no existe) ---
+  const obtenerCierrePorFecha = async (fecha) => {
+    try {
+      const { data, error } = await supabase
+        .from("cierres_caja")
+        .select("*")
+        .eq("fecha", fecha)
+        .maybeSingle();
+
+      if (error) throw error;
+      return { success: true, data: data || null };
+    } catch (error) {
+      console.error("❌ Error obteniendo cierre:", error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // --- Cerrar caja del día (snapshot inmutable) ---
+  const cerrarCajaDelDia = async (fecha) => {
+    try {
+      const existente = await obtenerCierrePorFecha(fecha);
+      if (existente.success && existente.data) {
+        return {
+          success: false,
+          error: `La caja del ${fecha} ya fue cerrada el ${new Date(
+            existente.data.cerrado_at,
+          ).toLocaleString("es-AR")}`,
+        };
+      }
+
+      const ventas = await obtenerVentasDelDia(fecha);
+      if (!ventas.success) {
+        return { success: false, error: ventas.error };
+      }
+
+      if (ventas.data.cantidadPedidos === 0) {
+        return {
+          success: false,
+          error: "No hay ventas registradas para cerrar",
+        };
+      }
+
+      const { data, error } = await supabase
+        .from("cierres_caja")
+        .insert([
+          {
+            fecha,
+            total_dia: ventas.data.totalDia,
+            cantidad_pedidos: ventas.data.cantidadPedidos,
+            ticket_promedio: ventas.data.ticketPromedio,
+            snapshot: ventas.data,
+            cerrado_por: session?.user?.id,
+            cerrado_por_email: session?.user?.email || null,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log("✅ Caja cerrada:", data);
+      return { success: true, data };
+    } catch (error) {
+      console.error("❌ Error cerrando caja:", error);
+      if (error.code === "23505") {
+        return { success: false, error: "Ya existe un cierre para esa fecha" };
+      }
+      return { success: false, error: error.message };
+    }
+  };
+
   const value = {
     mesas,
     reservas,
@@ -1149,6 +1321,10 @@ export const RestauranteProvider = ({ children }) => {
     eliminarMozo,
     restaurarMozo,
     recargarMozos,
+    // Cierre de Caja
+    obtenerVentasDelDia,
+    obtenerCierrePorFecha,
+    cerrarCajaDelDia,
   };
 
   return (
