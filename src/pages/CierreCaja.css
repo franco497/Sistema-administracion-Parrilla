@@ -132,22 +132,6 @@
   color: #fff;
 }
 
-/* .tabla-cierre th,
-.tabla-cierre td {
-  padding: 10px 14px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.tabla-cierre th {
-  background: rgba(0, 0, 0, 0.4);
-  font-weight: bold;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #fff;
-} */
-
 /* Tabla base: layout fijo para respetar anchos */
 .tabla-cierre {
   width: 100%;
@@ -179,13 +163,13 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #fff;
-  max-width: 200px;        /* ← AJUSTÁ ACÁ el ancho máximo de headers */
+  max-width: 200px;        
 }
 
 /* Celdas (td) */
 .tabla-cierre td {
   color: #fff;
-  max-width: 200px;        /* ← AJUSTÁ ACÁ el ancho máximo de celdas */
+  max-width: 200px;        
 }
 
 .tabla-cierre tr:last-child td {
@@ -255,4 +239,28 @@
   padding: 20px;
   color: #fff;
   font-size: 1.1rem;
+}
+
+/* Tabla "Por categoría" — anchos en TH (table-layout: fixed) */
+.tabla-categorias th:nth-child(1) {
+  width: 47%;
+}
+
+.tabla-categorias th:nth-child(2) {
+  width: 90px;
+  text-align: left;
+}
+
+.tabla-categorias th:nth-child(3) {
+  width: 22%;
+  text-align: left;
+}
+
+/* Los td heredan el ancho del th de su columna, solo ajustamos alineación */
+.tabla-categorias td:nth-child(2) {
+  text-align: left;
+}
+
+.tabla-categorias td:nth-child(3) {
+  text-align: left;
 }

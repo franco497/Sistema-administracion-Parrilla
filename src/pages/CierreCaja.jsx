@@ -149,7 +149,7 @@ const CierreCaja = ({ onVolver }) => {
             <>
               <div className="seccion">
                 <h2>📂 Por categoría</h2>
-                <table className="tabla-cierre">
+                <table className="tabla-cierre tabla-categorias">
                   <thead>
                     <tr>
                       <th>Categoría</th>
