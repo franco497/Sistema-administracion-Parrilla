@@ -199,7 +199,7 @@ const CierreCaja = ({ onVolver }) => {
                   <thead>
                     <tr>
                       <th>Pedido</th>
-                      <th>Hora</th>
+                      <th>Hora pago</th>
                       <th>Mesa</th>
                       <th>Total</th>
                     </tr>
@@ -209,7 +209,9 @@ const CierreCaja = ({ onVolver }) => {
                       <tr key={p.id_pedido}>
                         <td>#{p.id_pedido}</td>
                         <td>
-                          {new Date(p.fecha_hora).toLocaleTimeString("es-AR", {
+                          {new Date(
+                            p.fecha_pago || p.fecha_hora,
+                          ).toLocaleTimeString("es-AR", {
                             hour: "2-digit",
                             minute: "2-digit",
                           })}

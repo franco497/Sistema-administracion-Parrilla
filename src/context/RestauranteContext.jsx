@@ -549,10 +549,13 @@ export const RestauranteProvider = ({ children }) => {
 
       if (pedError) throw pedError;
 
-      // 2. Marcar pedido como pagado
+      // 2. Marcar pedido como pagado + registrar fecha de pago
       const { error } = await supabase
         .from("pedidos")
-        .update({ estado: "pagado" })
+        .update({
+          estado: "pagado",
+          fecha_pago: new Date().toISOString(),
+        })
         .eq("id_pedido", pedidoId);
 
       if (error) throw error;
@@ -1135,6 +1138,7 @@ export const RestauranteProvider = ({ children }) => {
           id_pedido,
           id_mesa,
           fecha_hora,
+          fecha_pago,
           total,
           detalle_pedido (
             cantidad,
@@ -1145,9 +1149,9 @@ export const RestauranteProvider = ({ children }) => {
         `,
         )
         .eq("estado", "pagado")
-        .gte("fecha_hora", desde)
-        .lte("fecha_hora", hasta)
-        .order("fecha_hora", { ascending: true });
+        .gte("fecha_pago", desde)
+        .lte("fecha_pago", hasta)
+        .order("fecha_pago", { ascending: true });
 
       if (error) throw error;
 

@@ -161,10 +161,10 @@ export const generarPDFCierreCaja = (resumen, meta = {}) => {
   // DETALLE DE PEDIDOS
   autoTable(doc, {
     startY: doc.lastAutoTable.finalY + 8,
-    head: [["Pedido", "Hora", "Mesa", "Total"]],
+    head: [["Pedido", "Hora pago", "Mesa", "Total"]],
     body: pedidos.map((p) => [
       `#${p.id_pedido}`,
-      new Date(p.fecha_hora).toLocaleTimeString("es-AR", {
+      new Date(p.fecha_pago || p.fecha_hora).toLocaleTimeString("es-AR", {
         hour: "2-digit",
         minute: "2-digit",
       }),
