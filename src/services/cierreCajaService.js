@@ -56,7 +56,14 @@ export const generarPDFCierreCaja = (resumen, meta = {}) => {
   const tableWidth = pageWidth - marginLeft - marginRight;
 
   const fechaLegible = textoParaPDF(formatearFecha(`${fecha}T12:00:00-03:00`));
-  const generado = new Date().toLocaleString("es-AR");
+  const generado = new Intl.DateTimeFormat("es-AR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date());
 
   // HEADER
   doc.setFontSize(24);
