@@ -132,7 +132,7 @@
   color: #fff;
 }
 
-.tabla-cierre th,
+/* .tabla-cierre th,
 .tabla-cierre td {
   padding: 10px 14px;
   text-align: left;
@@ -146,6 +146,46 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: #fff;
+} */
+
+/* Tabla base: layout fijo para respetar anchos */
+.tabla-cierre {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  color: #fff;
+  table-layout: fixed;   /* ← CLAVE: respeta max-width en celdas */
+}
+
+/* Celdas (th y td): base común con control de ancho */
+.tabla-cierre th,
+.tabla-cierre td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 200px;        /* ← AJUSTÁ ACÁ el ancho máximo */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Headers (th) */
+.tabla-cierre th {
+  background: rgba(0, 0, 0, 0.4);
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  max-width: 200px;        /* ← AJUSTÁ ACÁ el ancho máximo de headers */
+}
+
+/* Celdas (td) */
+.tabla-cierre td {
+  color: #fff;
+  max-width: 200px;        /* ← AJUSTÁ ACÁ el ancho máximo de celdas */
 }
 
 .tabla-cierre tr:last-child td {
