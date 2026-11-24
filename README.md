@@ -1,6 +1,6 @@
 # Administracion-Parrilla - Sistema de Administración de Salón
 
-Sistema web de gestión integral para parrillas y restaurantes, desarrollado con **React + Vite + Supabase**. Permite administrar mesas, reservas, mozos, pedidos y stock, con generación automática de tickets térmicos, control de estados en tiempo real y autenticación mediante **Magic Links**.
+Sistema web de gestión integral para parrillas y restaurantes, desarrollado con **React + Vite + Supabase**. Permite administrar mesas, reservas, mozos, pedidos, y **cierre de caja diario**, con generación automática de tickets térmicos, control de estados en tiempo real y autenticación mediante **Magic Links**.
 
 🔗 **Demo:** (próximamente)
 
@@ -17,6 +17,7 @@ Sistema web de gestión integral para parrillas y restaurantes, desarrollado con
 * 📄 **Factura A4** – Generación de factura completa en formato A4 con datos del cliente y detalle de consumos.
 * 📊 **Base de datos de productos** – Menú categorizado (Menús, Minutas, Bebidas, Postres, Vinos) con precios editables.
 * 🗑️ **Cancelación de pedidos** – Cancelación con restauración automática del estado de la mesa.
+* 💰 **Cierre de caja diario** – Vista de ventas del día con total, ticket promedio, desglose por categoría, top productos y **cierre   persistido con snapshot inmutable**. Export PDF oficial y vista previa.
 * 🔐 **Autenticación con Magic Links** – Inicio de sesión sin contraseñas mediante Supabase Auth.
 * 🛡️ **Row Level Security (RLS)** – Políticas de seguridad a nivel de fila en todas las tablas.
 * 📱 **Mobile First** – Diseño optimizado para tablets y móviles, ideal para uso en salón.
@@ -27,34 +28,35 @@ Sistema web de gestión integral para parrillas y restaurantes, desarrollado con
 
 ## 🛠️ Stack Tecnológico
 
-| Tecnología              | Uso                                       |
-| ----------------------- | ----------------------------------------- |
-| React 19                | UI y componentes                          |
-| Vite                    | Build tool y desarrollo                   |
-| React Router DOM        | Enrutamiento de la aplicación             |
-| Supabase                | Base de datos PostgreSQL y autenticación  |
-| PostgreSQL              | Base de datos relacional                  |
-| jsPDF                   | Generación de PDFs (facturas y tickets)   |
-| jspdf-autotable         | Tablas dentro de los PDFs                 |
-| Magic Links             | Autenticación sin contraseña              |
-| Row Level Security      | Seguridad a nivel de fila                 |
-| CSS3                    | Estilos, glassmorphism y responsive       |
-| Netlify                 | Hosting y despliegue continuo             |
+| Tecnología              | Uso                                                      |
+| ----------------------- | ---------------------------------------------------------|
+| React 19                | UI y componentes                                         |
+| Vite                    | Build tool y desarrollo                                  |
+| React Router DOM        | Enrutamiento de la aplicación                            |
+| Supabase                | Base de datos PostgreSQL y autenticación                 |
+| PostgreSQL              | Base de datos relacional                                 |
+| jsPDF                   | Generación de PDFs (facturas, tickets, cierre de caja)   |
+| jspdf-autotable         | Tablas dentro de los PDFs                                |
+| Magic Links             | Autenticación sin contraseña                             |
+| Row Level Security      | Seguridad a nivel de fila                                |
+| CSS3                    | Estilos, glassmorphism y responsive                      |
+| Netlify                 | Hosting y despliegue continuo                            |
 
 ---
 
 ## 📊 Base de Datos
 
-PostgreSQL mediante **Supabase**, utilizando **7 tablas relacionales** y **Row Level Security (RLS)** para garantizar que solo usuarios autenticados puedan acceder a la información.
+PostgreSQL mediante **Supabase**, utilizando **8 tablas relacionales** y **Row Level Security (RLS)** para garantizar que solo usuarios autenticados puedan acceder a la información.
 
-| Tabla            | Propósito                                                |
-| ---------------- | -------------------------------------------------------- |
-| reservas         | Reservas activas, completadas y canceladas               |
-| mozos            | Listado de mozos activos del salón                       |
-| productos        | Menú completo con categorías y precios                   |
-| categorias       | Agrupación de productos (Menús, Vinos, Postres, etc.)    |
-| pedidos          | Cabecera de cada pedido (mesa, total, estado)            |
-| detalle_pedido   | Items individuales de cada pedido                        |
+| Tabla            | Propósito                                                    |
+| ---------------- | -------------------------------------------------------------|
+| reservas         | Reservas activas, completadas y canceladas                   |
+| mozos            | Listado de mozos activos del salón                           |
+| productos        | Menú completo con categorías y precios                       |
+| categorias       | Agrupación de productos (Menús, Vinos, Postres, etc.)        |
+| pedidos          | Cabecera de cada pedido (mesa, total, estado, fecha de pago) |
+| detalle_pedido   | Items individuales de cada pedido                            |
+| cierres_caja     | Cierre diario persistido con snapshot JSONB inmutable        |
 
 > 📌 **Nota:** Los estados de las mesas se manejan en el frontend y se sincronizan con la base de datos a través de reservas y pedidos activos.
 
@@ -106,6 +108,29 @@ El mozo queda asignado a la mesa
 El nombre del mozo aparece en el ticket PDF
 ```
 
+### 💰Flujo de cierre de caja
+
+```text
+Usuario abre el módulo "Cierre de Caja"
+        ↓
+Selecciona la fecha (default: hoy ART)
+        ↓
+Sistema consulta pedidos pagados del día (filtro por fecha_pago)
+        ↓
+Muestra: total del día, cantidad de pedidos, ticket promedio,
+         desglose por categoría, top productos y tabla de pedidos
+        ↓
+Click en "Cerrar Caja del Día" → confirmación
+        ↓
+Se crea registro inmutable en cierres_caja con snapshot JSONB
+        ↓
+Badge 🔒 + aviso "Cerrado el DD/MM/YYYY, HH:MM por operador"
+        ↓
+Export PDF oficial (header "CIERRE DE CAJA OFICIAL")
+        ↓
+Re-cierre bloqueado (el cierre es inmutable)
+```
+
 ### 🔐 Autenticación mediante Magic Links
 
 ```text
@@ -141,10 +166,13 @@ Redirección automática al dashboard
 │   ├── pages/                 # Páginas de la aplicación
 │   │   ├── Dashboard.jsx
 │   │   ├── MesaView.jsx
+│   │   ├── CierreCaja.jsx     # Módulo de cierre de caja
+│   │   ├── CierreCaja.css     
 │   │   ├── login.jsx
 │   │   └── AuthCallback.jsx
 │   ├── services/              # Lógica de PDFs y servicios
-│   │   └── pdfService.js
+│   │   ├── pdfService.js
+│   │   └── cierreCajaService.js  # PDF de cierre de caja
 │   ├── lib/                   # Cliente de Supabase
 │   ├── styles/                # Arquitectura CSS
 │   └── App.jsx
@@ -189,11 +217,17 @@ Redirección automática al dashboard
 * Factura A4 completa.
 * Datos del cliente, mozo y detalle de productos.
 
-### 6. 📦 Módulo de Stock (en desarrollo)
+### 6. 💰 Módulo de Cierre de Caja
 
-* Base de datos de productos editable.
-* Categorización por tipo.
-* Actualización de precios.
+* Vista de ventas del día (default: hoy ART).
+* Filtro por fecha con selector y botón "Hoy".
+* Resumen: total del día, cantidad de pedidos, ticket promedio.
+* Desglose por categoría y top 10 productos vendidos.
+* Tabla de pedidos del día con hora de pago.
+* Cierre persistido: snapshot JSONB inmutable en cierres_caja (fecha UNIQUE, RLS sin UPDATE/DELETE).
+* Doble modo de PDF: vista previa (sin cerrar) vs oficial (con operador y fecha de cierre).
+* Re-cierre bloqueado: 1 cierre por día, no se puede deshacer.
+* Caso borde resuelto: pedido abierto antes de medianoche y cobrado pasada la medianoche se contabiliza en el día del cobro (cuando entró la plata), gracias a pedidos.fecha_pago.
 
 ---
 
