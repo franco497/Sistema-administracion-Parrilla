@@ -52,8 +52,8 @@ const MesaView = () => {
   const [cantidadesEdit, setCantidadesEdit] = useState({});
 
   const handleVolver = () => {
-    // ✅ Volver al dashboard y mostrar la grilla de mesas
-    navigate("/dashboard", { state: { mostrarMesas: true } });
+    // Volver al dashboard y mostrar la grilla de mesas
+    navigate("/dashboard?vista=mesas");
   };
 
   // Inicializar nombre de reserva
@@ -186,7 +186,7 @@ const MesaView = () => {
     setMensaje(`✅ Pedido guardado - Total: $${total.toLocaleString()}`);
     setTimeout(() => {
       setMensaje("");
-      navigate("/dashboard", { state: { mostrarMesas: true } });
+      navigate("/dashboard?vista=mesas");
     }, 1500);
   };
 
@@ -235,10 +235,10 @@ const MesaView = () => {
         setItemsPedido([]);
         setTotal(0);
 
-        // ✅ Redirigir a la grilla de mesas después de cobrar
+        // Redirigir a la grilla de mesas después de cobrar
         setTimeout(() => {
           setMensaje("");
-          navigate("/dashboard", { state: { mostrarMesas: true } });
+          navigate("/dashboard?vista=mesas");
         }, 1500);
       } else {
         setMensaje(`❌ Error al cobrar: ${result.error}`);
@@ -271,7 +271,7 @@ const MesaView = () => {
         setItemsPedido([]);
         setTotal(0);
 
-        // ✅ PERMANECER EN LA VISTA
+        // PERMANECER EN LA VISTA
         setTimeout(() => {
           setMensaje("");
         }, 2000);
