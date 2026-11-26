@@ -91,7 +91,7 @@ export const generarPDFCierreCaja = (resumen, meta = {}) => {
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false,
+      second: "2-digit",
     }).format(new Date(cerradoAt));
 
     doc.text(`Cerrado: ${cerradoFormateado}`, pageWidth / 2, 48, {
