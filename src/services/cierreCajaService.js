@@ -85,12 +85,18 @@ export const generarPDFCierreCaja = (resumen, meta = {}) => {
   doc.text(`Generado: ${generado}`, pageWidth / 2, 43, { align: "center" });
 
   if (esCierreOficial && cerradoAt) {
-    doc.text(
-      `Cerrado: ${new Date(cerradoAt).toLocaleString("es-AR")}`,
-      pageWidth / 2,
-      48,
-      { align: "center" },
-    );
+    const cerradoFormateado = new Intl.DateTimeFormat("es-AR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(new Date(cerradoAt));
+
+    doc.text(`Cerrado: ${cerradoFormateado}`, pageWidth / 2, 48, {
+      align: "center",
+    });
     if (cerradoPor) {
       doc.text(`Operador: ${textoParaPDF(cerradoPor)}`, pageWidth / 2, 53, {
         align: "center",
