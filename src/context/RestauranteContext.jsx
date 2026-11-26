@@ -289,99 +289,54 @@ export const RestauranteProvider = ({ children }) => {
     try {
       console.log("📝 Agregando item:", { mesaId, productoId, cantidad });
 
-      let pedidoId = pedidosActivos[mesaId];
-      console.log("🔍 pedidoId actual:", pedidoId);
-
-      // Si no hay pedido, crear uno
-      if (!pedidoId) {
-        console.log("🆕 No hay pedido, creando uno nuevo...");
-        const result = await crearPedido(mesaId);
-        if (!result.success) {
-          throw new Error("No se pudo crear el pedido: " + result.error);
-        }
-        pedidoId = result.data.id_pedido;
-        console.log("✅ Nuevo pedido creado con ID:", pedidoId);
+      // Validaciones básicas
+      if (!mesaId || !productoId || !cantidad || cantidad <= 0) {
+        throw new Error("Los datos del producto o de la mesa son inválidos");
       }
 
-      // ✅ BUSCAR SI EL PRODUCTO YA EXISTE EN EL PEDIDO
-      const { data: itemsExistentes, error: findError } = await supabase
-        .from("detalle_pedido")
-        .select("*")
-        .eq("id_pedido", pedidoId)
-        .eq("id_producto", productoId);
+      // Ejecutar operación transaccional en PostgreSQL
+      const { data, error } = await supabase.rpc("agregar_item_pedido", {
+        p_mesa_id: mesaId,
+        p_producto_id: productoId,
+        p_cantidad: cantidad,
+      });
 
-      if (findError) {
-        console.error("❌ Error buscando item existente:", findError);
-        throw findError;
+      if (error) {
+        console.error("❌ Error en RPC agregar_item_pedido:", error);
+        throw error;
       }
 
-      // Buscar producto para obtener precio
-      const producto = productos.find((p) => p.id_producto === productoId);
-      if (!producto) {
-        throw new Error("Producto no encontrado");
-      }
+      const pedidoId = data.pedidoId;
 
-      const precioUnitario = producto.precio;
+      console.log("✅ Item agregado correctamente:", data);
 
-      if (itemsExistentes && itemsExistentes.length > 0) {
-        // ✅ EL PRODUCTO YA EXISTE → ACTUALIZAR CANTIDAD
-        const itemExistente = itemsExistentes[0];
-        const nuevaCantidad = itemExistente.cantidad + cantidad;
-        const nuevoSubtotal = precioUnitario * nuevaCantidad;
+      // Actualizar estado local de pedidos activos
+      setPedidosActivos((prev) => ({
+        ...prev,
+        [mesaId]: pedidoId,
+      }));
 
-        console.log(
-          `📦 Producto ya existe. Cantidad actual: ${itemExistente.cantidad}, Nueva: ${nuevaCantidad}`,
-        );
+      // Actualizar estado local de la mesa
+      setMesas((prev) => ({
+        ...prev,
+        [mesaId]: {
+          ...prev[mesaId],
+          estado: "ocupada",
+          pedidoId,
+        },
+      }));
 
-        const { data, error } = await supabase
-          .from("detalle_pedido")
-          .update({
-            cantidad: nuevaCantidad,
-            subtotal: nuevoSubtotal,
-          })
-          .eq("id_detalle", itemExistente.id_detalle)
-          .select();
-
-        if (error) {
-          console.error("❌ Error actualizando item:", error);
-          throw error;
-        }
-
-        console.log("✅ Item actualizado:", data[0]);
-      } else {
-        // ✅ PRODUCTO NUEVO → CREAR NUEVO REGISTRO
-        const subtotal = precioUnitario * cantidad;
-
-        console.log("📦 Producto nuevo, creando registro...");
-
-        const { data, error } = await supabase
-          .from("detalle_pedido")
-          .insert([
-            {
-              id_pedido: pedidoId,
-              id_producto: productoId,
-              cantidad: cantidad,
-              precio_unitario: precioUnitario,
-              subtotal: subtotal,
-            },
-          ])
-          .select();
-
-        if (error) {
-          console.error("❌ Error en Supabase al agregar item:", error);
-          throw error;
-        }
-
-        console.log("✅ Item agregado:", data[0]);
-      }
-
-      // Actualizar total del pedido
-      await actualizarTotalPedido(pedidoId);
-
-      return { success: true, pedidoId };
+      return {
+        success: true,
+        pedidoId,
+      };
     } catch (error) {
       console.error("❌ Error agregando item:", error);
-      return { success: false, error: error.message };
+
+      return {
+        success: false,
+        error: error.message,
+      };
     }
   };
 
@@ -391,76 +346,76 @@ export const RestauranteProvider = ({ children }) => {
       console.log("🔄 actualizarPedido - mesaId:", mesaId);
       console.log("📦 items actualizados:", itemsActualizados);
 
-      const pedidoId = pedidosActivos[mesaId];
-      if (!pedidoId) {
-        throw new Error("No hay pedido activo para esta mesa");
+      if (!Array.isArray(itemsActualizados)) {
+        throw new Error("La lista de productos no es válida");
       }
 
-      // 1. Obtener los items actuales del pedido
-      const { data: itemsActuales, error: getError } = await supabase
-        .from("detalle_pedido")
-        .select("id_detalle")
-        .eq("id_pedido", pedidoId);
+      const { data, error } = await supabase.rpc("actualizar_pedido", {
+        p_mesa_id: mesaId,
+        p_items: itemsActualizados.map((item) => ({
+          id_producto: item.id_producto,
+          cantidad: item.cantidad,
+        })),
+      });
 
-      if (getError) throw getError;
+      if (error) throw error;
 
-      // 2. Eliminar todos los items actuales
-      if (itemsActuales && itemsActuales.length > 0) {
-        const idsEliminar = itemsActuales.map((item) => item.id_detalle);
-        const { error: deleteError } = await supabase
-          .from("detalle_pedido")
-          .delete()
-          .in("id_detalle", idsEliminar);
-
-        if (deleteError) throw deleteError;
-        console.log(`✅ Eliminados ${idsEliminar.length} items`);
+      if (!data || !data.success) {
+        throw new Error("No se pudo actualizar el pedido");
       }
 
-      // 3. Insertar los nuevos items
-      let totalPedido = 0;
-      for (const item of itemsActualizados) {
-        if (item.cantidad > 0) {
-          // Buscar el producto para obtener el precio
-          const producto = productos.find(
-            (p) => p.id_producto === item.id_producto,
-          );
-          if (!producto) {
-            console.warn(`⚠️ Producto ${item.id_producto} no encontrado`);
-            continue;
-          }
+      if (data.pedidoCancelado) {
+        // Buscar si la mesa tiene una reserva activa
+        const reservaActiva = reservas.find((r) => r.id_mesa === mesaId);
 
-          const subtotal = producto.precio * item.cantidad;
-          totalPedido += subtotal;
+        // Liberar la mesa o restaurar su reserva
+        setMesas((prev) => ({
+          ...prev,
+          [mesaId]: {
+            id: mesaId,
+            estado: reservaActiva ? "reservada" : "disponible",
+            adultos: 0,
+            menores: 0,
+            consumos: {},
+            reservaId: reservaActiva?.id_reserva ?? null,
+            reservaNombre: reservaActiva?.nombre_cliente ?? "",
+            pedidoId: null,
+          },
+        }));
 
-          const { error: insertError } = await supabase
-            .from("detalle_pedido")
-            .insert([
-              {
-                id_pedido: pedidoId,
-                id_producto: item.id_producto,
-                cantidad: item.cantidad,
-                precio_unitario: producto.precio,
-                subtotal: subtotal,
-              },
-            ]);
+        // Eliminar el pedido del estado local
+        setPedidosActivos((prev) => {
+          const nuevos = { ...prev };
+          delete nuevos[mesaId];
+          return nuevos;
+        });
 
-          if (insertError) throw insertError;
-        }
+        console.log(`✅ Pedido #${data.pedidoId} cancelado por quedar vacío`);
+      } else {
+        // Mantener sincronizado el pedido activo
+        setPedidosActivos((prev) => ({
+          ...prev,
+          [mesaId]: data.pedidoId,
+        }));
       }
 
-      // 4. Actualizar el total del pedido
-      const { error: updateError } = await supabase
-        .from("pedidos")
-        .update({ total: totalPedido })
-        .eq("id_pedido", pedidoId);
+      console.log(
+        `✅ Pedido #${data.pedidoId} actualizado. Total: $${data.total}`,
+      );
 
-      if (updateError) throw updateError;
-
-      console.log(`✅ Pedido #${pedidoId} actualizado. Total: $${totalPedido}`);
-      return { success: true, total: totalPedido };
+      return {
+        success: true,
+        pedidoId: data.pedidoId,
+        total: Number(data.total),
+        pedidoCancelado: data.pedidoCancelado,
+      };
     } catch (error) {
       console.error("❌ Error actualizando pedido:", error);
-      return { success: false, error: error.message };
+
+      return {
+        success: false,
+        error: error.message,
+      };
     }
   };
 

@@ -1,6 +1,6 @@
-// src/pages/Dashboard.jsx
+
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useRestaurante } from "../context/RestauranteContext";
 import MenuPrincipal from "../components/MenuPrincipal/MenuPrincipal";
 import GrillaMesas from "../components/Mesas/GrillaMesas";
@@ -13,20 +13,35 @@ import CierreCaja from "./CierreCaja";
 const Dashboard = () => {
   const { loading } = useRestaurante();
   const location = useLocation();
-  const [vistaActual, setVistaActual] = useState("principal");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (location.state?.mostrarMesas) {
-      setVistaActual("mesas");
-    }
-  }, [location]);
-
-  const handleSeleccionarModulo = (moduloId) => {
-    setVistaActual(moduloId);
+  // Recuperar la vista desde la URL
+  const obtenerVistaInicial = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get("vista") === "mesas" ? "mesas" : "principal";
   };
+
+  const [vistaActual, setVistaActual] = useState(obtenerVistaInicial);
+
+  // Sincronizar la vista cuando cambia la URL
+  useEffect(() => {
+    setVistaActual(obtenerVistaInicial());
+  }, [location.search]);
+
+const handleSeleccionarModulo = (moduloId) => {
+  if (moduloId === "mesas") {
+    navigate("/dashboard?vista=mesas");
+    return;
+  }
+
+  setVistaActual(moduloId);
+};
 
   const handleVolverMenu = () => {
     setVistaActual("principal");
+
+    // Limpiar el parámetro de la URL
+    navigate("/dashboard", { replace: true });
   };
 
   if (loading) {
@@ -40,12 +55,15 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
+
       <div className="dashboard-container">
         {vistaActual === "principal" && (
           <MenuPrincipal onSeleccionarModulo={handleSeleccionarModulo} />
         )}
 
-        {vistaActual === "mesas" && <GrillaMesas onVolver={handleVolverMenu} />}
+        {vistaActual === "mesas" && (
+          <GrillaMesas onVolver={handleVolverMenu} />
+        )}
 
         {vistaActual === "cargar" && (
           <GestionProductos onVolver={handleVolverMenu} />
